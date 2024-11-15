@@ -1,0 +1,4 @@
+# For frontend
+cd frontend
+npm init -y
+npm install react react-dom @mui/material axios
