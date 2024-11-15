@@ -3,3 +3,70 @@
 cd ../backend
 npm init -y
 npm install express mongoose body-parser cors
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const Contact = require('./models/contact'); // Define this model later
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// MongoDB Connection (Example for MongoDB)
+mongoose.connect('mongodb://localhost:27017/contacts', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('MongoDB connected');
+}).catch(err => console.log(err));
+
+// Define Routes (API Endpoints)
+app.post('/contacts', async (req, res) => {
+  try {
+    const { firstName, lastName, email, phone, company, jobTitle } = req.body;
+    if (!firstName || !lastName || !email || !phone) {
+      return res.status(400).send('All fields are required');
+    }
+    const newContact = new Contact(req.body);
+    await newContact.save();
+    res.status(201).send(newContact);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/contacts', async (req, res) => {
+  try {
+    const contacts = await Contact.find();
+    res.json(contacts);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+app.put('/contacts/:id', async (req, res) => {
+  try {
+    const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedContact);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+app.delete('/contacts/:id', async (req, res) => {
+  try {
+    await Contact.findByIdAndDelete(req.params.id);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+// Start Server
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
