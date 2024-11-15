@@ -46,6 +46,10 @@ app.get('/contacts', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+npm install
+
+node server.js
+
 
 app.put('/contacts/:id', async (req, res) => {
   try {
