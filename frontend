@@ -180,3 +180,6 @@ const ContactsTable = () => {
 };
 
 export default ContactsTable;
+npm install
+npm start
+
